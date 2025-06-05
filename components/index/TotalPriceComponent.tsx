@@ -1,23 +1,46 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../styles/theme";
+import { Subscription } from "../../types/subscription";
 
-const TotalPriceComponent = () => {
+const TotalPriceComponent = ({
+  subscriptionList,
+}: {
+  subscriptionList: Subscription[];
+}) => {
+  const today = new Date();
+
+  //총 월 구독 금액
+  const totalPrice = subscriptionList.reduce(
+    (acc, subscription) => acc + subscription.price,
+    0
+  );
+
+  //이번 달 남은 금액
+  const remainingPrice =
+    totalPrice -
+    subscriptionList.reduce((acc, subscription) => {
+      if (subscription.date < today.getDate()) {
+        return acc + subscription.price;
+      }
+      return acc;
+    }, 0);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>구독 현황</Text>
       <View style={styles.totalPriceContainer}>
         <Text style={styles.label}>총 월 구독 금액</Text>
-        <Text style={styles.value}>10,000원</Text>
+        <Text style={styles.value}>{totalPrice}원</Text>
       </View>
       <View style={styles.divider} />
       <View style={styles.totalPriceContainer}>
         <Text style={styles.label}>이번 달 남은 금액</Text>
-        <Text style={styles.value}>5,000원</Text>
+        <Text style={styles.value}>{remainingPrice}원</Text>
       </View>
       <View style={styles.divider} />
       <View style={styles.totalPriceContainer}>
         <Text style={styles.label}>구독중인 서비스 수</Text>
-        <Text style={styles.value}>10개</Text>
+        <Text style={styles.value}>{subscriptionList.length}개</Text>
       </View>
     </View>
   );
