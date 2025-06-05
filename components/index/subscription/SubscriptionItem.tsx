@@ -1,5 +1,6 @@
 import EvilIcons from "@expo/vector-icons/EvilIcons";
-import { StyleSheet, Text, View } from "react-native";
+import { router } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../../styles/theme";
 import { Subscription } from "../../../types/subscription";
 
@@ -37,7 +38,21 @@ const SubscriptionItem = ({ subscription }: { subscription: Subscription }) => {
     <View style={styles.container}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>{subscription.name}</Text>
-        <EvilIcons name="pencil" size={24} color="black" />
+        <Pressable
+          onPress={() =>
+            router.push({
+              pathname: "addSubscriptionModal",
+              params: {
+                name: subscription.name,
+                price: subscription.price,
+                date: subscription.date,
+                paymentMethod: subscription.paymentMethod,
+              },
+            })
+          }
+        >
+          <EvilIcons name="pencil" size={24} color="black" />
+        </Pressable>
       </View>
       <View style={styles.subscriptionInfoContainer}>
         <View style={styles.infoItem}>

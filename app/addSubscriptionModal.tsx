@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
   StyleSheet,
@@ -9,14 +9,22 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "../styles/theme";
-
 const AddSubscriptionModal = () => {
+  const params = useLocalSearchParams<{
+    name?: string;
+    price?: string;
+    date?: string;
+    paymentMethod?: string;
+  }>();
+
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
-  const [date, setDate] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
+  const [name, setName] = useState(params?.name || "");
+  const [price, setPrice] = useState(params?.price || "");
+  const [date, setDate] = useState(params?.date || "");
+  const [paymentMethod, setPaymentMethod] = useState(
+    params?.paymentMethod || ""
+  );
 
   const handleSubmit = () => {
     // TODO: 구독 정보 저장 로직 구현
