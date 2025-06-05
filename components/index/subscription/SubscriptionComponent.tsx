@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Subscription } from "../../../types/subscription";
-
+import SubscriptionItem from "./SubscriptionItem";
 const SubscriptionComponent = ({
   subscriptionList,
 }: {
@@ -8,10 +8,8 @@ const SubscriptionComponent = ({
 }) => {
   return (
     <View style={styles.container}>
-      {subscriptionList.map((subscription) => (
-        <View key={subscription.name}>
-          <Text>{subscription.name}</Text>
-        </View>
+      {subscriptionList.map((subscription, index) => (
+        <SubscriptionItem key={index} subscription={subscription} />
       ))}
     </View>
   );
@@ -22,7 +20,7 @@ export default SubscriptionComponent;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     marginTop: 20,
+    width: "100%",
   },
 });

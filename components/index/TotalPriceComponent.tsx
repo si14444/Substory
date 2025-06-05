@@ -30,12 +30,12 @@ const TotalPriceComponent = ({
       <Text style={styles.title}>구독 현황</Text>
       <View style={styles.totalPriceContainer}>
         <Text style={styles.label}>총 월 구독 금액</Text>
-        <Text style={styles.value}>{totalPrice}원</Text>
+        <Text style={styles.value}>{totalPrice.toLocaleString()}원</Text>
       </View>
       <View style={styles.divider} />
       <View style={styles.totalPriceContainer}>
         <Text style={styles.label}>이번 달 남은 금액</Text>
-        <Text style={styles.value}>{remainingPrice}원</Text>
+        <Text style={styles.value}>{remainingPrice.toLocaleString()}원</Text>
       </View>
       <View style={styles.divider} />
       <View style={styles.totalPriceContainer}>
@@ -55,17 +55,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     padding: 24,
     borderRadius: 16,
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: Colors.primary,
-    shadowColor: Colors.secondary,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+    backgroundColor: "#E6F2FF",
   },
   totalPriceContainer: {
     flexDirection: "row",
@@ -86,11 +76,12 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.primary,
+    color: Colors.value,
   },
   divider: {
     width: "100%",
     height: 1,
-    backgroundColor: "#e6eeff",
+    backgroundColor: Colors.secondary,
+    opacity: 0.3,
   },
 });

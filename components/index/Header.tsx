@@ -15,5 +15,6 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     justifyContent: "flex-end",
+    marginBottom: 10,
   },
 });
