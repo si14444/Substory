@@ -23,11 +23,9 @@ export default function RootLayout() {
       <Stack.Screen
         name="addSubscriptionModal"
         options={{
-          presentation: "modal",
+          presentation: "transparentModal",
+          animation: "fade",
           headerShown: false,
-          contentStyle: {
-            backgroundColor: "white",
-          },
         }}
       />
     </Stack>
