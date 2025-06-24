@@ -1,93 +1,210 @@
-import { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import Header from "../components/index/Header";
-import TotalPriceComponent from "../components/index/TotalPriceComponent";
-import SubscriptionComponent from "../components/index/subscription/SubscriptionComponent";
-import { Subscription } from "../types/subscription";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+  Alert,
+  Image,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Colors } from "../styles/theme";
 
-const subscriptionListData: Subscription[] = [
-  {
-    name: "유튜브 프리미엄",
-    price: 10000,
-    date: 2,
-    paymentMethod: "토스",
-  },
-  {
-    name: "넷플릭스",
-    price: 10000,
-    date: 14,
-    paymentMethod: "농협카드",
-  },
-  {
-    name: "쿠팡 플레이스",
-    price: 10000,
-    date: 31,
-    paymentMethod: "토스",
-  },
-  {
-    name: "카카오톡",
-    price: 10000,
-    date: 1,
-    paymentMethod: "농협카드",
-  },
-];
+const LoginScreen = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-const Home = () => {
-  const [subscriptionList, setSubscriptionList] =
-    useState<Subscription[]>(subscriptionListData);
+  const handleGoogleLogin = async () => {
+    try {
+      setIsLoading(true);
+      // 구글 로그인 로직 구현
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      router.replace("/home");
+    } catch (error) {
+      Alert.alert("오류", "구글 로그인에 실패했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  // 정렬
-  const handleSort = (
-    type:
-      | "dateAsc"
-      | "dateDesc"
-      | "priceAsc"
-      | "priceDesc"
-      | "paymentMethod"
-      | "default"
-  ) => {
-    if (type === "default") {
-      setSubscriptionList(
-        subscriptionList.sort((a, b) => a.name.localeCompare(b.name))
-      );
-    } else if (type === "dateAsc") {
-      setSubscriptionList(subscriptionList.sort((a, b) => a.date - b.date));
-    } else if (type === "dateDesc") {
-      setSubscriptionList(subscriptionList.sort((a, b) => b.date - a.date));
-    } else if (type === "priceAsc") {
-      setSubscriptionList(subscriptionList.sort((a, b) => a.price - b.price));
-    } else if (type === "priceDesc") {
-      setSubscriptionList(subscriptionList.sort((a, b) => b.price - a.price));
-    } else if (type === "paymentMethod") {
-      setSubscriptionList(
-        subscriptionList.sort((a, b) =>
-          a.paymentMethod.localeCompare(b.paymentMethod)
-        )
-      );
+  const handleKakaoLogin = async () => {
+    try {
+      setIsLoading(true);
+      // 카카오 로그인 로직 구현
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      router.replace("/home");
+    } catch (error) {
+      Alert.alert("오류", "카카오 로그인에 실패했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    try {
+      setIsLoading(true);
+      // 애플 로그인 로직 구현
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      Alert.alert("성공", "애플 로그인이 완료되었습니다.");
+      router.replace("/home");
+    } catch (error) {
+      Alert.alert("오류", "애플 로그인에 실패했습니다.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Header />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <TotalPriceComponent subscriptionList={subscriptionList} />
-        <SubscriptionComponent
-          subscriptionList={subscriptionList}
-          handleSort={handleSort}
-        />
-      </ScrollView>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View
+        style={[
+          styles.content,
+          Platform.OS === "ios" ? { marginBottom: 50 } : { marginBottom: 100 },
+        ]}
+      >
+        {/* 헤더 */}
+        <View style={styles.header}>
+          <Image
+            source={require("../assets/icon.png")}
+            style={styles.logoContainer}
+          />
+        </View>
+
+        {/* 소셜 로그인 버튼들 */}
+        <View style={styles.socialContainer}>
+          {/* 카카오 로그인 (한국에서 가장 보편적) */}
+          <TouchableOpacity
+            style={[styles.socialButton, styles.kakaoButton]}
+            onPress={handleKakaoLogin}
+            disabled={isLoading}
+          >
+            <View style={styles.buttonContent}>
+              <Ionicons name="chatbubble" size={24} color="#000000" />
+              <Text style={styles.kakaoButtonText}>카카오로 계속하기</Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* 구글 로그인 */}
+          <TouchableOpacity
+            style={[styles.socialButton, styles.googleButton]}
+            onPress={handleGoogleLogin}
+            disabled={isLoading}
+          >
+            <View style={styles.buttonContent}>
+              <Ionicons name="logo-google" size={24} color="#4285F4" />
+              <Text style={styles.googleButtonText}>Google로 계속하기</Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* 애플 로그인 (iOS만 표시) */}
+          {Platform.OS === "ios" && (
+            <TouchableOpacity
+              style={[styles.socialButton, styles.appleButton]}
+              onPress={handleAppleLogin}
+              disabled={isLoading}
+            >
+              <View style={styles.buttonContent}>
+                <Ionicons name="logo-apple" size={24} color="#ffffff" />
+                <Text style={styles.appleButtonText}>Apple로 계속하기</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    </SafeAreaView>
   );
 };
-
-export default Home;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#ffffff",
+  },
+  content: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  header: {
     alignItems: "center",
+    marginBottom: 48,
+  },
+  logoContainer: {
+    width: 150,
+    height: 150,
+    marginBottom: 16,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: Colors.secondary,
+    textAlign: "center",
+  },
+  socialContainer: {
+    paddingHorizontal: 16,
+  },
+  socialTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: Colors.value,
+    textAlign: "center",
+    marginBottom: 32,
+  },
+  socialButton: {
+    borderRadius: 10,
+    paddingVertical: 18,
     paddingHorizontal: 20,
-    paddingTop: 10,
+    alignItems: "center",
+    marginBottom: 16,
+    borderWidth: 0,
+  },
+  buttonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+  kakaoButton: {
+    backgroundColor: "#FEE500",
+  },
+  kakaoButtonText: {
+    color: "#000000",
+    fontSize: 17,
+    fontWeight: "600",
+    marginLeft: 12,
+  },
+  googleButton: {
+    backgroundColor: "#F5F6F7",
+  },
+  googleButtonText: {
+    color: "#333333",
+    fontSize: 17,
+    fontWeight: "600",
+    marginLeft: 12,
+  },
+  appleButton: {
+    backgroundColor: "#000000",
+  },
+  appleButtonText: {
+    color: "#ffffff",
+    fontSize: 17,
+    fontWeight: "600",
+    marginLeft: 12,
+  },
+  termsContainer: {
+    alignItems: "center",
+  },
+  termsText: {
+    color: Colors.secondary,
+    fontSize: 12,
+    textAlign: "center",
+    lineHeight: 18,
+  },
+  termsLink: {
+    color: Colors.primary,
+    textDecorationLine: "underline",
   },
 });
+
+export default LoginScreen;
