@@ -1,4 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
+import { initializeKakaoSDK } from "@react-native-kakao/core";
+import { login } from "@react-native-kakao/user";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -17,6 +19,8 @@ const LoginScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  initializeKakaoSDK("49ecca10f9378b80cf05c31563e5cc59");
+
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
@@ -34,6 +38,8 @@ const LoginScreen = () => {
     try {
       setIsLoading(true);
       // 카카오 로그인 로직 구현
+      const token = await login();
+      console.log(token);
       await new Promise((resolve) => setTimeout(resolve, 1000));
       router.replace("/home");
     } catch (error) {
