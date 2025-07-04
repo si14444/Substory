@@ -1,6 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { initializeKakaoSDK } from "@react-native-kakao/core";
 import { login } from "@react-native-kakao/user";
+import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -13,7 +15,26 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import "react-native-url-polyfill/auto";
 import { Colors } from "../styles/theme";
+import { saveTokens } from "../utils/auth";
+
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error("Missing Supabase environment variables");
+}
+
+// Supabase 클라이언트 초기화
+const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+});
 
 const LoginScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -39,9 +60,38 @@ const LoginScreen = () => {
       setIsLoading(true);
       // 카카오 로그인 로직 구현
       const token = await login();
-      console.log(token);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      router.replace("/home");
+      console.log("Kakao token:", token.idToken);
+
+      if (!token || !token.idToken) {
+        Alert.alert("Login Error", "Failed to get Kakao ID token.");
+        return;
+      }
+
+      /* Supabase Auth */
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: "kakao",
+        token: token.idToken,
+      });
+
+      if (error) {
+        Alert.alert("Login Error", error.message);
+        return;
+      }
+
+      if (data?.user) {
+        console.log("Logged in user:", data);
+
+        // 토큰 저장
+        const { access_token, refresh_token } = data.session;
+        const saved = await saveTokens(access_token, refresh_token);
+
+        if (!saved) {
+          Alert.alert("오류", "토큰 저장에 실패했습니다.");
+          return;
+        }
+
+        router.replace("/home");
+      }
     } catch (error) {
       Alert.alert("오류", "카카오 로그인에 실패했습니다.");
     } finally {
