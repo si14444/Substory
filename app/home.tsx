@@ -1,40 +1,36 @@
-import { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import Header from "../components/index/Header";
 import TotalPriceComponent from "../components/index/TotalPriceComponent";
 import SubscriptionComponent from "../components/index/subscription/SubscriptionComponent";
 import { Subscription } from "../types/subscription";
-
-const subscriptionListData: Subscription[] = [
-  {
-    name: "유튜브 프리미엄",
-    price: 10000,
-    date: 2,
-    paymentMethod: "토스",
-  },
-  {
-    name: "넷플릭스",
-    price: 10000,
-    date: 14,
-    paymentMethod: "농협카드",
-  },
-  {
-    name: "쿠팡 플레이스",
-    price: 10000,
-    date: 31,
-    paymentMethod: "토스",
-  },
-  {
-    name: "카카오톡",
-    price: 10000,
-    date: 1,
-    paymentMethod: "농협카드",
-  },
-];
+import { fetchSubscriptions, supabase } from "../utils/subscription";
 
 const Home = () => {
-  const [subscriptionList, setSubscriptionList] =
-    useState<Subscription[]>(subscriptionListData);
+  const [subscriptionList, setSubscriptionList] = useState<Subscription[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+      if (userError || !userData?.user) {
+        Alert.alert("오류", "로그인 정보를 불러올 수 없습니다.");
+        setLoading(false);
+        return;
+      }
+      try {
+        const subs = await fetchSubscriptions(userData.user.id);
+        setSubscriptionList(subs);
+      } catch (e) {
+        Alert.alert("오류", "구독 정보를 불러오지 못했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   // 정렬
   const handleSort = (
@@ -46,25 +42,25 @@ const Home = () => {
       | "paymentMethod"
       | "default"
   ) => {
-    if (type === "default") {
-      setSubscriptionList(
-        subscriptionList.sort((a, b) => a.name.localeCompare(b.name))
-      );
-    } else if (type === "dateAsc") {
-      setSubscriptionList(subscriptionList.sort((a, b) => a.date - b.date));
-    } else if (type === "dateDesc") {
-      setSubscriptionList(subscriptionList.sort((a, b) => b.date - a.date));
-    } else if (type === "priceAsc") {
-      setSubscriptionList(subscriptionList.sort((a, b) => a.price - b.price));
-    } else if (type === "priceDesc") {
-      setSubscriptionList(subscriptionList.sort((a, b) => b.price - a.price));
-    } else if (type === "paymentMethod") {
-      setSubscriptionList(
-        subscriptionList.sort((a, b) =>
+    setSubscriptionList((prev) => {
+      const list = [...prev];
+      if (type === "default") {
+        return list.sort((a, b) => a.name.localeCompare(b.name));
+      } else if (type === "dateAsc") {
+        return list.sort((a, b) => a.date - b.date);
+      } else if (type === "dateDesc") {
+        return list.sort((a, b) => b.date - a.date);
+      } else if (type === "priceAsc") {
+        return list.sort((a, b) => a.price - b.price);
+      } else if (type === "priceDesc") {
+        return list.sort((a, b) => b.price - a.price);
+      } else if (type === "paymentMethod") {
+        return list.sort((a, b) =>
           a.paymentMethod.localeCompare(b.paymentMethod)
-        )
-      );
-    }
+        );
+      }
+      return list;
+    });
   };
 
   return (

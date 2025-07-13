@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -9,6 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "../styles/theme";
+import { addSubscription, supabase } from "../utils/subscription";
 const AddSubscriptionModal = () => {
   const params = useLocalSearchParams<{
     name?: string;
@@ -26,9 +28,27 @@ const AddSubscriptionModal = () => {
     params?.paymentMethod || ""
   );
 
-  const handleSubmit = () => {
-    // TODO: 구독 정보 저장 로직 구현
-    router.back();
+  const handleSubmit = async () => {
+    try {
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+      if (userError || !userData?.user) {
+        Alert.alert("오류", "로그인 정보를 불러올 수 없습니다.");
+        return;
+      }
+      console.log("user_id:", userData.user.id);
+      console.log("입력값:", { name, price, date, paymentMethod });
+      await addSubscription(userData.user.id, {
+        name,
+        price: Number(price),
+        date: Number(date),
+        paymentMethod,
+      });
+      router.back();
+    } catch (e: any) {
+      console.log("구독 추가 에러:", e);
+      Alert.alert("오류", e.message || JSON.stringify(e));
+    }
   };
 
   return (
