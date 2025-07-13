@@ -4,7 +4,7 @@ import { initializeKakaoSDK } from "@react-native-kakao/core";
 import { login } from "@react-native-kakao/user";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -41,6 +41,17 @@ const LoginScreen = () => {
   const router = useRouter();
 
   initializeKakaoSDK("49ecca10f9378b80cf05c31563e5cc59");
+
+  // 세션 체크 후 자동 이동
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data?.session) {
+        router.replace("/home");
+      }
+    };
+    checkSession();
+  }, []);
 
   const handleGoogleLogin = async () => {
     try {
