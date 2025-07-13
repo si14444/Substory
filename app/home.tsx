@@ -1,18 +1,14 @@
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import Header from "../components/index/Header";
 import TotalPriceComponent from "../components/index/TotalPriceComponent";
 import SubscriptionComponent from "../components/index/subscription/SubscriptionComponent";
+import { useSubscriptions } from "../hooks/useSubscriptions";
 import {
   requestNotificationPermission,
   schedulePaymentNotifications,
 } from "../utils/notification";
-import { fetchSubscriptions, supabase } from "../utils/subscription";
 
 const queryClient = new QueryClient();
 
@@ -21,16 +17,7 @@ function HomeContent() {
     data: subscriptionList = [],
     isLoading,
     refetch,
-  } = useQuery({
-    queryKey: ["subscriptions"],
-    queryFn: async () => {
-      const { data: userData, error: userError } =
-        await supabase.auth.getUser();
-      if (userError || !userData?.user)
-        throw new Error("로그인 정보를 불러올 수 없습니다.");
-      return await fetchSubscriptions(userData.user.id);
-    },
-  });
+  } = useSubscriptions();
 
   // 구독 리스트가 변경될 때마다 결제 하루 전 알림 예약
   useEffect(() => {
