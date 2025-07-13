@@ -4,6 +4,10 @@ import Header from "../components/index/Header";
 import TotalPriceComponent from "../components/index/TotalPriceComponent";
 import SubscriptionComponent from "../components/index/subscription/SubscriptionComponent";
 import { Subscription } from "../types/subscription";
+import {
+  requestNotificationPermission,
+  schedulePaymentNotifications,
+} from "../utils/notification";
 import { fetchSubscriptions, supabase } from "../utils/subscription";
 
 const Home = () => {
@@ -31,6 +35,17 @@ const Home = () => {
     };
     load();
   }, []);
+
+  // 구독 리스트가 변경될 때마다 결제 하루 전 알림 예약
+  useEffect(() => {
+    if (subscriptionList.length > 0) {
+      requestNotificationPermission().then((granted) => {
+        if (granted) {
+          schedulePaymentNotifications(subscriptionList);
+        }
+      });
+    }
+  }, [subscriptionList]);
 
   // 정렬
   const handleSort = (
