@@ -53,3 +53,18 @@ export async function addSubscription(
   });
   if (error) throw error;
 }
+
+// 구독 삭제
+export async function deleteSubscription(
+  userId: string,
+  subscription: Subscription
+) {
+  const { error } = await supabase.from("subscriptions").delete().match({
+    user_id: userId,
+    name: subscription.name,
+    price: subscription.price,
+    date: subscription.date,
+    payment_method: subscription.paymentMethod,
+  });
+  if (error) throw error;
+}

@@ -1,10 +1,17 @@
+import { MaterialIcons } from "@expo/vector-icons";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../../styles/theme";
 import { Subscription } from "../../../types/subscription";
 
-const SubscriptionItem = ({ subscription }: { subscription: Subscription }) => {
+const SubscriptionItem = ({
+  subscription,
+  onDelete,
+}: {
+  subscription: Subscription;
+  onDelete?: () => void;
+}) => {
   const today = new Date();
 
   // 월 날짜 조정
@@ -38,21 +45,29 @@ const SubscriptionItem = ({ subscription }: { subscription: Subscription }) => {
     <View style={styles.container}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>{subscription.name}</Text>
-        <Pressable
-          onPress={() =>
-            router.push({
-              pathname: "addSubscriptionModal",
-              params: {
-                name: subscription.name,
-                price: subscription.price,
-                date: subscription.date,
-                paymentMethod: subscription.paymentMethod,
-              },
-            })
-          }
-        >
-          <EvilIcons name="pencil" size={24} color="black" />
-        </Pressable>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: "addSubscriptionModal",
+                params: {
+                  name: subscription.name,
+                  price: subscription.price,
+                  date: subscription.date,
+                  paymentMethod: subscription.paymentMethod,
+                },
+              })
+            }
+          >
+            <EvilIcons name="pencil" size={24} color="black" />
+          </Pressable>
+          {/* 삭제 버튼 */}
+          {onDelete && (
+            <Pressable onPress={onDelete} style={{ marginLeft: 4 }}>
+              <MaterialIcons name="delete" size={24} color="#E74C3C" />
+            </Pressable>
+          )}
+        </View>
       </View>
       <View style={styles.subscriptionInfoContainer}>
         <View style={styles.infoItem}>

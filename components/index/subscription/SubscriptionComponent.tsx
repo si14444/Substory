@@ -1,9 +1,10 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors } from "../../../styles/theme";
 import { Subscription } from "../../../types/subscription";
+import { deleteSubscription, supabase } from "../../../utils/subscription";
 import SubscriptionItem from "./SubscriptionItem";
 
 const sortOptions = [
@@ -18,6 +19,7 @@ const sortOptions = [
 const SubscriptionComponent = ({
   subscriptionList,
   handleSort,
+  refetchSubscriptions,
 }: {
   subscriptionList: Subscription[];
   handleSort: (
@@ -29,6 +31,7 @@ const SubscriptionComponent = ({
       | "paymentMethod"
       | "default"
   ) => void;
+  refetchSubscriptions?: () => void | Promise<any>;
 }) => {
   const router = useRouter();
   const [isShowSortModal, setIsShowSortModal] = useState(false);
@@ -40,6 +43,34 @@ const SubscriptionComponent = ({
     | "paymentMethod"
     | "default"
   >("default");
+
+  // 삭제 핸들러
+  const handleDelete = async (subscription: Subscription) => {
+    Alert.alert("구독 삭제", `${subscription.name} 구독을 삭제하시겠습니까?`, [
+      { text: "취소", style: "cancel" },
+      {
+        text: "삭제",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const { data: userData, error: userError } =
+              await supabase.auth.getUser();
+            if (userError || !userData?.user) {
+              Alert.alert("오류", "로그인 정보를 불러올 수 없습니다.");
+              return;
+            }
+            await deleteSubscription(userData.user.id, subscription);
+            if (refetchSubscriptions) {
+              await refetchSubscriptions();
+            }
+            Alert.alert("삭제 완료", "구독이 삭제되었습니다.");
+          } catch (e: any) {
+            Alert.alert("오류", e.message || JSON.stringify(e));
+          }
+        },
+      },
+    ]);
+  };
 
   return (
     <View style={styles.container}>
@@ -107,7 +138,11 @@ const SubscriptionComponent = ({
 
       {/* 구독 서비스 목록 */}
       {subscriptionList.map((subscription, index) => (
-        <SubscriptionItem key={index} subscription={subscription} />
+        <SubscriptionItem
+          key={index}
+          subscription={subscription}
+          onDelete={() => handleDelete(subscription)}
+        />
       ))}
     </View>
   );
