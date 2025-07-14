@@ -136,6 +136,13 @@ const SubscriptionComponent = ({
         )}
       </View>
 
+      {/* 구독 서비스가 없을 때 안내 문구 (정렬 아래) */}
+      {subscriptionList.length === 0 && (
+        <View style={styles.guideBox}>
+          <Text style={styles.guideText}>구독 서비스를 추가해보세요!</Text>
+        </View>
+      )}
+
       {/* 구독 서비스 목록 */}
       {subscriptionList.map((subscription, index) => (
         <SubscriptionItem
@@ -226,6 +233,20 @@ const styles = StyleSheet.create({
   sortOptionText: {
     fontSize: 14,
     color: "#333333",
+    fontWeight: "500",
+  },
+  guideBox: {
+    backgroundColor: "#fffbe6",
+    borderRadius: 10,
+    padding: 18,
+    marginBottom: 20,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ffe58f",
+  },
+  guideText: {
+    color: "#ad8b00",
+    fontSize: 15,
     fontWeight: "500",
   },
 });
