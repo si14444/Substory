@@ -1,9 +1,16 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";
 const Header = () => {
+  const router = useRouter();
   return (
     <View style={styles.container}>
-      <FontAwesome name="bell-o" size={24} color="black" />
+      <FontAwesome
+        name="gear"
+        size={24}
+        color="#B0B0B0"
+        onPress={() => router.push("/settings")}
+      />
     </View>
   );
 };
