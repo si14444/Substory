@@ -1,6 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { initializeKakaoSDK } from "@react-native-kakao/core";
+import {
+  getKeyHashAndroid,
+  initializeKakaoSDK,
+} from "@react-native-kakao/core";
 import { login } from "@react-native-kakao/user";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "expo-router";
@@ -41,6 +44,14 @@ const LoginScreen = () => {
   const router = useRouter();
 
   initializeKakaoSDK("49ecca10f9378b80cf05c31563e5cc59");
+
+  useEffect(() => {
+    async function printKeyHash() {
+      const keyHash = await getKeyHashAndroid();
+      console.log("getKeyHashAndroid:", keyHash);
+    }
+    printKeyHash();
+  }, []);
 
   // 세션 체크 후 자동 이동
   useEffect(() => {
