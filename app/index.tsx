@@ -5,7 +5,7 @@ import {
   initializeKakaoSDK,
 } from "@react-native-kakao/core";
 import { login } from "@react-native-kakao/user";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -22,15 +22,16 @@ import "react-native-url-polyfill/auto";
 import { Colors } from "../styles/theme";
 import { saveTokens } from "../utils/auth";
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+// 환경 변수 타입 체크
+const supabaseUrl: string = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey: string = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Missing Supabase environment variables");
 }
 
 // Supabase 클라이언트 초기화
-const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: AsyncStorage,
     autoRefreshToken: true,
@@ -39,11 +40,37 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
-const LoginScreen = () => {
-  const [isLoading, setIsLoading] = useState(false);
+// 카카오 토큰 타입 정의
+interface KakaoOAuthToken {
+  accessToken: string;
+  refreshToken: string;
+  idToken?: string;
+  accessTokenExpiresAt: Date;
+  refreshTokenExpiresAt: Date;
+  scopes?: string[];
+}
+
+// 에러 타입 정의
+interface KakaoError extends Error {
+  code?: string;
+}
+
+const LoginScreen: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
-  initializeKakaoSDK("49ecca10f9378b80cf05c31563e5cc59");
+  // SDK 초기화를 useEffect로 이동
+  useEffect(() => {
+    const initKakao = async (): Promise<void> => {
+      try {
+        await initializeKakaoSDK("49ecca10f9378b80cf05c31563e5cc59");
+      } catch (error) {
+        console.error("Kakao SDK initialization failed:", error);
+      }
+    };
+
+    initKakao();
+  }, []);
 
   useEffect(() => {
     async function printKeyHash() {
@@ -55,37 +82,51 @@ const LoginScreen = () => {
 
   // 세션 체크 후 자동 이동
   useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data?.session) {
-        router.replace("/home");
+    const checkSession = async (): Promise<void> => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Session check error:", error);
+          return;
+        }
+        if (data?.session) {
+          router.replace("/home");
+        }
+      } catch (error) {
+        console.error("Session check failed:", error);
       }
     };
     checkSession();
-  }, []);
+  }, [router]);
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async (): Promise<void> => {
     try {
       setIsLoading(true);
       // 구글 로그인 로직 구현
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise<void>((resolve) => setTimeout(resolve, 1000));
       router.replace("/home");
     } catch (error) {
+      console.error("Google login error:", error);
       Alert.alert("오류", "구글 로그인에 실패했습니다.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleKakaoLogin = async () => {
+  const handleKakaoLogin = async (): Promise<void> => {
     try {
       setIsLoading(true);
       // 카카오 로그인 로직 구현
       const token = await login();
-      console.log("Kakao token:", token.idToken);
+      console.log("Kakao token:", token);
+      console.log("Kakao idToken:", token?.idToken);
 
       if (!token || !token.idToken) {
-        Alert.alert("Login Error", "Failed to get Kakao ID token.");
+        console.error("Kakao login failed - no idToken:", token);
+        Alert.alert(
+          "로그인 오류",
+          "카카오 ID 토큰을 받을 수 없습니다. 다시 시도해주세요."
+        );
         return;
       }
 
@@ -96,39 +137,59 @@ const LoginScreen = () => {
       });
 
       if (error) {
-        Alert.alert("Login Error", error.message);
+        console.error("Supabase auth error:", error);
+        Alert.alert("로그인 오류", `인증 실패: ${error.message}`);
         return;
       }
 
-      if (data?.user) {
+      if (data?.user && data?.session) {
         console.log("Logged in user:", data);
 
         // 토큰 저장
         const { access_token, refresh_token } = data.session;
-        const saved = await saveTokens(access_token, refresh_token);
+        if (access_token && refresh_token) {
+          const saved = await saveTokens(access_token, refresh_token);
 
-        if (!saved) {
-          Alert.alert("오류", "토큰 저장에 실패했습니다.");
-          return;
+          if (!saved) {
+            Alert.alert("오류", "토큰 저장에 실패했습니다.");
+            return;
+          }
         }
 
         router.replace("/home");
       }
     } catch (error) {
-      Alert.alert("오류", "카카오 로그인에 실패했습니다.");
+      console.error("Kakao login error:", error);
+      let errorMessage = "카카오 로그인에 실패했습니다.";
+
+      // 구체적인 에러 처리
+      const kakaoError = error as KakaoError;
+      if (kakaoError?.code === "AuthenticationCancelled") {
+        errorMessage = "로그인이 취소되었습니다.";
+      } else if (kakaoError?.code === "NotSupported") {
+        errorMessage =
+          "카카오 앱이 설치되지 않았습니다. 브라우저로 로그인을 시도해보세요.";
+      } else if (kakaoError?.code === "NetworkError") {
+        errorMessage = "네트워크 연결을 확인해주세요.";
+      } else if (kakaoError?.message) {
+        errorMessage = kakaoError.message;
+      }
+
+      Alert.alert("로그인 오류", errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleAppleLogin = async () => {
+  const handleAppleLogin = async (): Promise<void> => {
     try {
       setIsLoading(true);
       // 애플 로그인 로직 구현
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise<void>((resolve) => setTimeout(resolve, 1000));
       Alert.alert("성공", "애플 로그인이 완료되었습니다.");
       router.replace("/home");
     } catch (error) {
+      console.error("Apple login error:", error);
       Alert.alert("오류", "애플 로그인에 실패했습니다.");
     } finally {
       setIsLoading(false);
