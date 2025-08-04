@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function RootLayout() {
@@ -29,6 +30,7 @@ export default function RootLayout() {
           headerShown: false,
         }}
       />
+      <Text style={{ color: "red" }}>aewff</Text>
     </Stack>
   );
 }
