@@ -227,7 +227,7 @@ const LoginScreen: React.FC = () => {
           </TouchableOpacity>
 
           {/* 구글 로그인 */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[styles.socialButton, styles.googleButton]}
             onPress={handleGoogleLogin}
             disabled={isLoading}
@@ -236,7 +236,7 @@ const LoginScreen: React.FC = () => {
               <Ionicons name="logo-google" size={24} color="#4285F4" />
               <Text style={styles.googleButtonText}>Google로 계속하기</Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* 애플 로그인 (iOS만 표시) */}
           {Platform.OS === "ios" && (

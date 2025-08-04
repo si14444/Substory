@@ -11,9 +11,4 @@
 -keep class com.swmansion.reanimated.** { *; }
 -keep class com.facebook.react.turbomodule.** { *; }
 
-# Kakao SDK
--keep class com.kakao.sdk.** { *; }
--keep class kotlin.coroutines.** { *; }
--dontwarn com.kakao.sdk.**
-
 # Add any project specific keep options here:
