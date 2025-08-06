@@ -264,7 +264,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: "flex-end",
+    paddingTop: 100,
+    justifyContent: "center",
   },
   header: {
     alignItems: "center",
