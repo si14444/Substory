@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import AdBanner from "../components/AdBanner";
 import { Colors } from "../styles/theme";
 import { supabase } from "../utils/subscription";
 
@@ -143,6 +144,7 @@ export default function SettingsPage() {
           </TouchableOpacity>
         </View>
       </View>
+      <AdBanner style={styles.adBanner} />
     </View>
   );
 }
@@ -249,5 +251,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 17,
     fontWeight: "bold",
+  },
+  adBanner: {
+    width: '100%',
+    marginBottom: 0,
   },
 });

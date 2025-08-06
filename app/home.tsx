@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import Header from "../components/index/Header";
 import TotalPriceComponent from "../components/index/TotalPriceComponent";
 import SubscriptionComponent from "../components/index/subscription/SubscriptionComponent";
+import AdBanner from "../components/AdBanner";
 import { useSubscriptions } from "../hooks/useSubscriptions";
 import {
   requestNotificationPermission,
@@ -56,7 +57,7 @@ function HomeContent() {
   return (
     <View style={styles.container}>
       <Header />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
         <TotalPriceComponent subscriptionList={subscriptionList} />
         <SubscriptionComponent
           subscriptionList={subscriptionList}
@@ -64,6 +65,7 @@ function HomeContent() {
           refetchSubscriptions={refetch}
         />
       </ScrollView>
+      <AdBanner style={styles.adBanner} />
     </View>
   );
 }
@@ -82,5 +84,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingTop: 10,
+  },
+  scrollView: {
+    flex: 1,
+    width: '100%',
+  },
+  adBanner: {
+    width: '100%',
+    marginBottom: 0,
   },
 });
