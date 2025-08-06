@@ -55,13 +55,6 @@
             "handleKakaoOpenUrl": true
           }
         }
-      ],
-      [
-        "react-native-google-mobile-ads",
-        {
-          "androidAppId": "ca-app-pub-4535163023491412~5248865709",
-          "iosAppId": "ca-app-pub-4535163023491412~4894460725"
-        }
       ]
     ],
     "extra": {
