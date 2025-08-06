@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
-import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads';
+import { useEffect, useState } from "react";
+import { Platform } from "react-native";
+import {
+  AdEventType,
+  InterstitialAd,
+  TestIds,
+} from "react-native-google-mobile-ads";
 
 interface InterstitialAdManagerProps {
   onAdClosed?: () => void;
@@ -27,11 +31,11 @@ export class InterstitialAdManager {
 
   private initializeAd() {
     // Test Ad Unit IDs for development
-    const adUnitId = __DEV__ 
+    const adUnitId = __DEV__
       ? TestIds.INTERSTITIAL
       : Platform.select({
-          ios: 'ca-app-pub-3940256099942544/4411468910',
-          android: 'ca-app-pub-3940256099942544/1033173712',
+          ios: "ca-app-pub-4535163023491412/6721869094",
+          android: "ca-app-pub-4535163023491412/7707647709",
         });
 
     if (!adUnitId) return;
@@ -44,20 +48,20 @@ export class InterstitialAdManager {
     this.interstitialAd.addAdEventListener(AdEventType.LOADED, () => {
       this.isLoaded = true;
       this.isLoading = false;
-      console.log('Interstitial ad loaded');
+      console.log("Interstitial ad loaded");
     });
 
     // 광고 실패 이벤트
     this.interstitialAd.addAdEventListener(AdEventType.ERROR, (error) => {
       this.isLoaded = false;
       this.isLoading = false;
-      console.log('Interstitial ad failed to load:', error);
+      console.log("Interstitial ad failed to load:", error);
     });
 
     // 광고 닫힘 이벤트
     this.interstitialAd.addAdEventListener(AdEventType.CLOSED, () => {
       this.isLoaded = false;
-      console.log('Interstitial ad closed');
+      console.log("Interstitial ad closed");
       // 다음 광고를 미리 로드
       this.loadAd();
     });
@@ -65,34 +69,40 @@ export class InterstitialAdManager {
 
   public loadAd(): void {
     if (!this.interstitialAd || this.isLoaded || this.isLoading) return;
-    
+
     this.isLoading = true;
     this.interstitialAd.load();
   }
 
   public showAd(callbacks?: InterstitialAdManagerProps): boolean {
     if (!this.interstitialAd || !this.isLoaded) {
-      console.log('Interstitial ad not ready');
-      callbacks?.onError?.(new Error('Ad not loaded'));
+      console.log("Interstitial ad not ready");
+      callbacks?.onError?.(new Error("Ad not loaded"));
       return false;
     }
 
     // 광고 표시 이벤트 리스너 추가
-    const showListener = this.interstitialAd.addAdEventListener(AdEventType.OPENED, () => {
-      callbacks?.onAdShown?.();
-      showListener(); // 리스너 제거
-    });
+    const showListener = this.interstitialAd.addAdEventListener(
+      AdEventType.OPENED,
+      () => {
+        callbacks?.onAdShown?.();
+        showListener(); // 리스너 제거
+      }
+    );
 
-    const closedListener = this.interstitialAd.addAdEventListener(AdEventType.CLOSED, () => {
-      callbacks?.onAdClosed?.();
-      closedListener(); // 리스너 제거
-    });
+    const closedListener = this.interstitialAd.addAdEventListener(
+      AdEventType.CLOSED,
+      () => {
+        callbacks?.onAdClosed?.();
+        closedListener(); // 리스너 제거
+      }
+    );
 
     try {
       this.interstitialAd.show();
       return true;
     } catch (error) {
-      console.log('Failed to show interstitial ad:', error);
+      console.log("Failed to show interstitial ad:", error);
       callbacks?.onError?.(error);
       return false;
     }
