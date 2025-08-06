@@ -1,9 +1,16 @@
 import { Stack } from "expo-router";
-import { Text } from "react-native";
+import { useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import AdFrequencyManager from "../utils/adManager";
 
 export default function RootLayout() {
   const insets = useSafeAreaInsets();
+  
+  // 앱 실행 시 일일 1회 전면 광고 처리
+  useEffect(() => {
+    AdFrequencyManager.handleAppLaunch();
+  }, []);
+
   return (
     <Stack
       screenOptions={{
@@ -30,7 +37,6 @@ export default function RootLayout() {
           headerShown: false,
         }}
       />
-      <Text style={{ color: "red" }}>aewff</Text>
     </Stack>
   );
 }

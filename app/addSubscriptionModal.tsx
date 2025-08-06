@@ -11,6 +11,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "../styles/theme";
 import { addSubscription, supabase } from "../utils/subscription";
+import AdFrequencyManager from "../utils/adManager";
 const AddSubscriptionModal = () => {
   const params = useLocalSearchParams<{
     name?: string;
