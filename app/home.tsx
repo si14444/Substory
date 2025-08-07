@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import Header from "../components/index/Header";
 import TotalPriceComponent from "../components/index/TotalPriceComponent";
@@ -16,6 +16,13 @@ export default function Home() {
     isLoading,
     refetch,
   } = useSubscriptions();
+  
+  const [sortedSubscriptions, setSortedSubscriptions] = useState(subscriptionList);
+  
+  // subscriptionList가 변경될 때마다 sortedSubscriptions 업데이트
+  useEffect(() => {
+    setSortedSubscriptions(subscriptionList);
+  }, [subscriptionList]);
 
   // 구독 리스트가 변경될 때마다 결제 하루 전 알림 예약
   useEffect(() => {
@@ -38,8 +45,7 @@ export default function Home() {
       | "paymentMethod"
       | "default"
   ) => {
-    // 클라이언트 정렬만 적용 (refetch는 그대로)
-    return [...subscriptionList].sort((a, b) => {
+    const sorted = [...subscriptionList].sort((a, b) => {
       if (type === "default") return a.name.localeCompare(b.name);
       if (type === "dateAsc") return a.date - b.date;
       if (type === "dateDesc") return b.date - a.date;
@@ -49,6 +55,7 @@ export default function Home() {
         return a.paymentMethod.localeCompare(b.paymentMethod);
       return 0;
     });
+    setSortedSubscriptions(sorted);
   };
 
   return (
@@ -57,7 +64,7 @@ export default function Home() {
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
         <TotalPriceComponent subscriptionList={subscriptionList} />
         <SubscriptionComponent
-          subscriptionList={subscriptionList}
+          subscriptionList={sortedSubscriptions}
           handleSort={handleSort}
           refetchSubscriptions={refetch}
         />

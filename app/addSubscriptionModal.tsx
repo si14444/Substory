@@ -31,6 +31,27 @@ const AddSubscriptionModal = () => {
   );
 
   const handleSubmit = async () => {
+    // 입력값 검증
+    if (!name.trim()) {
+      Alert.alert("입력 오류", "서비스 이름을 입력해주세요.");
+      return;
+    }
+    
+    if (!price.trim() || isNaN(Number(price)) || Number(price) <= 0) {
+      Alert.alert("입력 오류", "올바른 금액을 입력해주세요.");
+      return;
+    }
+    
+    if (!date.trim() || isNaN(Number(date)) || Number(date) < 1 || Number(date) > 31) {
+      Alert.alert("입력 오류", "올바른 결제일을 입력해주세요. (1-31)");
+      return;
+    }
+    
+    if (!paymentMethod.trim()) {
+      Alert.alert("입력 오류", "결제 수단을 입력해주세요.");
+      return;
+    }
+
     try {
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
