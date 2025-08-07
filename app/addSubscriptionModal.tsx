@@ -9,9 +9,9 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useQueryClient } from "@tanstack/react-query";
 import { Colors } from "../styles/theme";
 import { addSubscription, supabase } from "../utils/subscription";
-import AdFrequencyManager from "../utils/adManager";
 const AddSubscriptionModal = () => {
   const params = useLocalSearchParams<{
     name?: string;
@@ -22,6 +22,7 @@ const AddSubscriptionModal = () => {
 
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [name, setName] = useState(params?.name || "");
   const [price, setPrice] = useState(params?.price || "");
   const [date, setDate] = useState(params?.date || "");
@@ -45,6 +46,10 @@ const AddSubscriptionModal = () => {
         date: Number(date),
         paymentMethod,
       });
+      
+      // 구독 데이터 즉시 리페치
+      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      
       router.back();
     } catch (e: any) {
       console.log("구독 추가 에러:", e);

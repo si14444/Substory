@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import Header from "../components/index/Header";
@@ -11,9 +10,7 @@ import {
   schedulePaymentNotifications,
 } from "../utils/notification";
 
-const queryClient = new QueryClient();
-
-function HomeContent() {
+export default function Home() {
   const {
     data: subscriptionList = [],
     isLoading,
@@ -70,13 +67,6 @@ function HomeContent() {
   );
 }
 
-export default function Home() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <HomeContent />
-    </QueryClientProvider>
-  );
-}
 
 const styles = StyleSheet.create({
   container: {

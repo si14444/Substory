@@ -1,7 +1,10 @@
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AdFrequencyManager from "../utils/adManager";
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const insets = useSafeAreaInsets();
@@ -12,31 +15,33 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        headerTitleStyle: {
-          fontWeight: "bold",
-        },
-        contentStyle: {
-          paddingTop: insets.top,
-          paddingBottom: insets.bottom,
-          paddingLeft: insets.left,
-          paddingRight: insets.right,
-          backgroundColor: "white",
-        },
-      }}
-    >
-      <Stack.Screen name="index" />
-      <Stack.Screen name="home" />
-      <Stack.Screen
-        name="addSubscriptionModal"
-        options={{
-          presentation: "transparentModal",
-          animation: "fade",
+    <QueryClientProvider client={queryClient}>
+      <Stack
+        screenOptions={{
           headerShown: false,
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          contentStyle: {
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
+            paddingLeft: insets.left,
+            paddingRight: insets.right,
+            backgroundColor: "white",
+          },
         }}
-      />
-    </Stack>
+      >
+        <Stack.Screen name="index" />
+        <Stack.Screen name="home" />
+        <Stack.Screen
+          name="addSubscriptionModal"
+          options={{
+            presentation: "transparentModal",
+            animation: "fade",
+            headerShown: false,
+          }}
+        />
+      </Stack>
+    </QueryClientProvider>
   );
 }
