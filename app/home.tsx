@@ -4,11 +4,13 @@ import Header from "../components/index/Header";
 import TotalPriceComponent from "../components/index/TotalPriceComponent";
 import SubscriptionComponent from "../components/index/subscription/SubscriptionComponent";
 import AdBanner from "../components/AdBanner";
+import CustomInterstitialModal from "../components/CustomInterstitialModal";
 import { useSubscriptions } from "../hooks/useSubscriptions";
 import {
   requestNotificationPermission,
   schedulePaymentNotifications,
 } from "../utils/notification";
+import AdFrequencyManager from "../utils/adManager";
 
 export default function Home() {
   const {
@@ -18,6 +20,20 @@ export default function Home() {
   } = useSubscriptions();
   
   const [sortedSubscriptions, setSortedSubscriptions] = useState(subscriptionList);
+  const [showInterstitialModal, setShowInterstitialModal] = useState(false);
+  
+  // 앱 실행 시 하루에 한 번 전면 광고 표시
+  useEffect(() => {
+    AdFrequencyManager.handleAppLaunch((onClose) => {
+      setShowInterstitialModal(true);
+    });
+  }, []);
+
+  const handleCloseInterstitialModal = async () => {
+    setShowInterstitialModal(false);
+    // 광고 표시 기록
+    await AdFrequencyManager.recordAdShown('launch');
+  };
   
   // subscriptionList가 변경될 때마다 sortedSubscriptions 업데이트
   useEffect(() => {
@@ -70,6 +86,13 @@ export default function Home() {
         />
       </ScrollView>
       <AdBanner style={styles.adBanner} />
+      
+      {/* 커스텀 전면 광고 모달 */}
+      <CustomInterstitialModal
+        visible={showInterstitialModal}
+        onClose={handleCloseInterstitialModal}
+        onAdClick={handleCloseInterstitialModal}
+      />
     </View>
   );
 }

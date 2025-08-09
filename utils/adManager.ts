@@ -131,11 +131,21 @@ export class AdFrequencyManager {
   /**
    * 앱 실행 시 호출 - 일일 1회 광고 표시
    */
-  static async handleAppLaunch(): Promise<void> {
+  static async handleAppLaunch(showCustomModal?: (onClose: () => void) => void): Promise<void> {
     const canShow = await this.shouldShowAd('launch');
     
     if (!canShow) {
       console.log('Launch ad skipped due to frequency limits');
+      return;
+    }
+
+    // 커스텀 모달을 사용하는 경우
+    if (showCustomModal) {
+      setTimeout(() => {
+        showCustomModal(() => {
+          this.recordAdShown('launch');
+        });
+      }, this.AD_FREQUENCY.LAUNCH_DELAY);
       return;
     }
 
