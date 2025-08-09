@@ -23,7 +23,15 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.si14444.substory"
+      "package": "com.si14444.substory",
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.INTERNET",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.INTERNET"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -53,6 +61,10 @@
       "eas": {
         "projectId": "4ef890c6-b615-4e93-9a13-50877dd1bab6"
       }
+    },
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/4ef890c6-b615-4e93-9a13-50877dd1bab6"
     }
   }
 }
