@@ -1,70 +1,65 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createClient } from "@supabase/supabase-js";
+import * as FileSystem from 'expo-file-system';
 import { Subscription } from "../types/subscription";
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+const SUBSCRIPTIONS_FILE = FileSystem.documentDirectory + 'subscriptions.json';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error("Missing Supabase environment variables");
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-});
-
-// 구독 목록 조회 (로그인된 유저)
-export async function fetchSubscriptions(
-  userId: string
-): Promise<Subscription[]> {
-  const { data, error } = await supabase
-    .from("subscriptions")
-    .select("name, price, date, payment_method")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  // 컬럼명 매핑
-  return (
-    data?.map((item) => ({
-      name: item.name,
-      price: item.price,
-      date: item.date,
-      paymentMethod: item.payment_method,
-    })) ?? []
-  );
+// 구독 목록 조회
+export async function fetchSubscriptions(): Promise<Subscription[]> {
+  try {
+    const fileInfo = await FileSystem.getInfoAsync(SUBSCRIPTIONS_FILE);
+    if (!fileInfo.exists) {
+      return [];
+    }
+    
+    const content = await FileSystem.readAsStringAsync(SUBSCRIPTIONS_FILE);
+    const data = JSON.parse(content);
+    return data.subscriptions || [];
+  } catch (error) {
+    console.error('Error fetching subscriptions:', error);
+    return [];
+  }
 }
 
 // 구독 추가
-export async function addSubscription(
-  userId: string,
-  subscription: Subscription
-) {
-  const { error } = await supabase.from("subscriptions").insert({
-    user_id: userId,
-    name: subscription.name,
-    price: subscription.price,
-    date: subscription.date,
-    payment_method: subscription.paymentMethod,
-  });
-  if (error) throw error;
+export async function addSubscription(subscription: Subscription) {
+  try {
+    const subscriptions = await fetchSubscriptions();
+    const newSubscription = {
+      ...subscription,
+      id: Date.now().toString(), // 간단한 ID 생성
+      createdAt: new Date().toISOString(),
+    };
+    
+    subscriptions.push(newSubscription);
+    
+    await FileSystem.writeAsStringAsync(
+      SUBSCRIPTIONS_FILE,
+      JSON.stringify({ subscriptions }, null, 2)
+    );
+  } catch (error) {
+    console.error('Error adding subscription:', error);
+    throw error;
+  }
 }
 
 // 구독 삭제
-export async function deleteSubscription(
-  userId: string,
-  subscription: Subscription
-) {
-  const { error } = await supabase.from("subscriptions").delete().match({
-    user_id: userId,
-    name: subscription.name,
-    price: subscription.price,
-    date: subscription.date,
-    payment_method: subscription.paymentMethod,
-  });
-  if (error) throw error;
+export async function deleteSubscription(targetSubscription: Subscription) {
+  try {
+    const subscriptions = await fetchSubscriptions();
+    const filteredSubscriptions = subscriptions.filter(
+      (sub) =>
+        !(sub.name === targetSubscription.name &&
+          sub.price === targetSubscription.price &&
+          sub.date === targetSubscription.date &&
+          sub.paymentMethod === targetSubscription.paymentMethod)
+    );
+    
+    await FileSystem.writeAsStringAsync(
+      SUBSCRIPTIONS_FILE,
+      JSON.stringify({ subscriptions: filteredSubscriptions }, null, 2)
+    );
+  } catch (error) {
+    console.error('Error deleting subscription:', error);
+    throw error;
+  }
 }

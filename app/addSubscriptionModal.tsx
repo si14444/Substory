@@ -11,7 +11,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { Colors } from "../styles/theme";
-import { addSubscription, supabase } from "../utils/subscription";
+import { addSubscription } from "../utils/subscription";
 const AddSubscriptionModal = () => {
   const params = useLocalSearchParams<{
     name?: string;
@@ -53,15 +53,8 @@ const AddSubscriptionModal = () => {
     }
 
     try {
-      const { data: userData, error: userError } =
-        await supabase.auth.getUser();
-      if (userError || !userData?.user) {
-        Alert.alert("오류", "로그인 정보를 불러올 수 없습니다.");
-        return;
-      }
-      console.log("user_id:", userData.user.id);
       console.log("입력값:", { name, price, date, paymentMethod });
-      await addSubscription(userData.user.id, {
+      await addSubscription({
         name,
         price: Number(price),
         date: Number(date),

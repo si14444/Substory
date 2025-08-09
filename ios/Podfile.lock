@@ -1,5 +1,4 @@
 PODS:
-  - Alamofire (5.9.1)
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
   - EXApplication (6.1.5):
@@ -325,17 +324,6 @@ PODS:
   - hermes-engine (0.79.5):
     - hermes-engine/Pre-built (= 0.79.5)
   - hermes-engine/Pre-built (0.79.5)
-  - KakaoSDKAuth (2.22.0):
-    - KakaoSDKCommon (= 2.22.0)
-  - KakaoSDKCommon (2.22.0):
-    - KakaoSDKCommon/Common (= 2.22.0)
-    - KakaoSDKCommon/Network (= 2.22.0)
-  - KakaoSDKCommon/Common (2.22.0)
-  - KakaoSDKCommon/Network (2.22.0):
-    - Alamofire (~> 5.9.0)
-    - KakaoSDKCommon/Common (= 2.22.0)
-  - KakaoSDKUser (2.22.0):
-    - KakaoSDKAuth (= 2.22.0)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -2081,57 +2069,6 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNCKakaoCore (2.4.0):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - KakaoSDKCommon (= 2.22.0)
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
-  - RNCKakaoUser (2.4.0):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - KakaoSDKUser (= 2.22.0)
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - RNCKakaoCore
-    - Yoga
   - RNGoogleMobileAds (15.4.0):
     - DoubleConversion
     - glog
@@ -2305,20 +2242,14 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
-  - "RNCKakaoCore (from `../node_modules/@react-native-kakao/core`)"
-  - "RNCKakaoUser (from `../node_modules/@react-native-kakao/user`)"
   - RNGoogleMobileAds (from `../node_modules/react-native-google-mobile-ads`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   trunk:
-    - Alamofire
     - Google-Mobile-Ads-SDK
     - GoogleUserMessagingPlatform
-    - KakaoSDKAuth
-    - KakaoSDKCommon
-    - KakaoSDKUser
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -2503,10 +2434,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
-  RNCKakaoCore:
-    :path: "../node_modules/@react-native-kakao/core"
-  RNCKakaoUser:
-    :path: "../node_modules/@react-native-kakao/user"
   RNGoogleMobileAds:
     :path: "../node_modules/react-native-google-mobile-ads"
   RNScreens:
@@ -2515,7 +2442,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Alamofire: f36a35757af4587d8e4f4bfa223ad10be2422b8c
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EXApplication: 50cc8ea58c138da6e3f25cd789634219c86b90d5
@@ -2544,9 +2470,6 @@ SPEC CHECKSUMS:
   Google-Mobile-Ads-SDK: db00a3836f288f94e52114f312b56fe066699d82
   GoogleUserMessagingPlatform: f8d0cdad3ca835406755d0a69aa634f00e76d576
   hermes-engine: f03b0e06d3882d71e67e45b073bb827da1a21aae
-  KakaoSDKAuth: 569b377eda622d93d4575240b8031cd658163eef
-  KakaoSDKCommon: d57127c339fc79e73aa8b236a4c77211c29924f1
-  KakaoSDKUser: 043bcd7e91454ebf3bf64f150c430e6f65f0a08d
   RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
   RCTDeprecation: 5f638f65935e273753b1f31a365db6a8d6dc53b5
   RCTRequired: 8b46a520ea9071e2bc47d474aa9ca31b4a935bd8
@@ -2611,8 +2534,6 @@ SPEC CHECKSUMS:
   ReactCodegen: 28eb66b3670b0f91cae893a4b3b34813c305c34f
   ReactCommon: 3dbed0a44e9e5d7b77b0f35983633aa5d33c9694
   RNCAsyncStorage: e25fda4679876e5204c4c502d297757ec1f17ced
-  RNCKakaoCore: 522526c6c390937371cb819fcefe069b3f53512a
-  RNCKakaoUser: 549e0f418525b9011e31e64ab62b39ae2285bcae
   RNGoogleMobileAds: 9d36dd4e175e24aeb2fc170b829779edc35bd34d
   RNScreens: d9d5d8a2a484bb4446968bfa00db991f1117db44
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748

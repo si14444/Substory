@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors } from "../../../styles/theme";
 import { Subscription } from "../../../types/subscription";
-import { deleteSubscription, supabase } from "../../../utils/subscription";
+import { deleteSubscription } from "../../../utils/subscription";
 import SubscriptionItem from "./SubscriptionItem";
 
 const sortOptions = [
@@ -53,13 +53,7 @@ const SubscriptionComponent = ({
         style: "destructive",
         onPress: async () => {
           try {
-            const { data: userData, error: userError } =
-              await supabase.auth.getUser();
-            if (userError || !userData?.user) {
-              Alert.alert("오류", "로그인 정보를 불러올 수 없습니다.");
-              return;
-            }
-            await deleteSubscription(userData.user.id, subscription);
+            await deleteSubscription(subscription);
             if (refetchSubscriptions) {
               await refetchSubscriptions();
             }

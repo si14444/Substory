@@ -31,28 +31,12 @@
     },
     "plugins": [
       "expo-router",
+      "expo-file-system",
       [
         "expo-build-properties",
         {
-          "android": {
-            "extraMavenRepos": [
-              "https://devrepo.kakao.com/nexus/content/groups/public/"
-            ]
-          },
           "ios": {
             "useFrameworks": "static"
-          }
-        }
-      ],
-      [
-        "@react-native-kakao/core",
-        {
-          "nativeAppKey": "49ecca10f9378b80cf05c31563e5cc59",
-          "android": {
-            "authCodeHandlerActivity": true
-          },
-          "ios": {
-            "handleKakaoOpenUrl": true
           }
         }
       ],
