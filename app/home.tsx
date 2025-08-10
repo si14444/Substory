@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
+import AdBanner from "../components/AdBanner";
+import CustomInterstitialModal from "../components/CustomInterstitialModal";
 import Header from "../components/index/Header";
 import TotalPriceComponent from "../components/index/TotalPriceComponent";
 import SubscriptionComponent from "../components/index/subscription/SubscriptionComponent";
-import AdBanner from "../components/AdBanner";
-import CustomInterstitialModal from "../components/CustomInterstitialModal";
 import { useSubscriptions } from "../hooks/useSubscriptions";
+import AdFrequencyManager from "../utils/adManager";
 import {
   requestNotificationPermission,
   schedulePaymentNotifications,
 } from "../utils/notification";
-import AdFrequencyManager from "../utils/adManager";
 
 export default function Home() {
   const {
@@ -18,10 +18,11 @@ export default function Home() {
     isLoading,
     refetch,
   } = useSubscriptions();
-  
-  const [sortedSubscriptions, setSortedSubscriptions] = useState(subscriptionList);
+
+  const [sortedSubscriptions, setSortedSubscriptions] =
+    useState(subscriptionList);
   const [showInterstitialModal, setShowInterstitialModal] = useState(false);
-  
+
   // 앱 실행 시 하루에 한 번 전면 광고 표시
   useEffect(() => {
     AdFrequencyManager.handleAppLaunch((onClose) => {
@@ -32,9 +33,14 @@ export default function Home() {
   const handleCloseInterstitialModal = async () => {
     setShowInterstitialModal(false);
     // 광고 표시 기록
-    await AdFrequencyManager.recordAdShown('launch');
+    await AdFrequencyManager.recordAdShown("launch");
   };
-  
+
+  // 테스트용 광고 표시 함수
+  const handleTestAd = () => {
+    setShowInterstitialModal(true);
+  };
+
   // subscriptionList가 변경될 때마다 sortedSubscriptions 업데이트
   useEffect(() => {
     setSortedSubscriptions(subscriptionList);
@@ -76,8 +82,11 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <Header />
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+      <Header onTestAd={handleTestAd} />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={styles.scrollView}
+      >
         <TotalPriceComponent subscriptionList={subscriptionList} />
         <SubscriptionComponent
           subscriptionList={sortedSubscriptions}
@@ -86,17 +95,16 @@ export default function Home() {
         />
       </ScrollView>
       <AdBanner style={styles.adBanner} />
-      
-      {/* 커스텀 전면 광고 모달 */}
+
+      {/* 배너 광고 모달 */}
       <CustomInterstitialModal
         visible={showInterstitialModal}
         onClose={handleCloseInterstitialModal}
-        onAdClick={handleCloseInterstitialModal}
+        adUnitId={__DEV__ ? "ca-app-pub-3940256099942544/6300978111" : process.env.EXPO_PUBLIC_ADMOB_BANNER_ID || ""}
       />
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -107,10 +115,10 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    width: '100%',
+    width: "100%",
   },
   adBanner: {
-    width: '100%',
+    width: "100%",
     marginBottom: 0,
   },
 });
