@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "substory",
+    "name": "구독토리",
     "slug": "substory",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -43,6 +43,7 @@
     "plugins": [
       "expo-router",
       "expo-file-system",
+      "expo-notifications",
       [
         "expo-build-properties",
         {

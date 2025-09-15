@@ -10,6 +10,7 @@ import AdFrequencyManager from "../utils/adManager";
 import {
   requestNotificationPermission,
   schedulePaymentNotifications,
+  getScheduledNotifications,
 } from "../utils/notification";
 
 export default function Home() {
@@ -48,13 +49,27 @@ export default function Home() {
 
   // 구독 리스트가 변경될 때마다 결제 하루 전 알림 예약
   useEffect(() => {
-    if (subscriptionList.length > 0) {
-      requestNotificationPermission().then((granted) => {
-        if (granted) {
-          schedulePaymentNotifications(subscriptionList);
+    const setupNotifications = async () => {
+      if (subscriptionList.length > 0) {
+        try {
+          const granted = await requestNotificationPermission();
+          if (granted) {
+            await schedulePaymentNotifications(subscriptionList);
+
+            // 개발 환경에서 예약된 알림 확인
+            if (__DEV__) {
+              await getScheduledNotifications();
+            }
+          } else {
+            console.warn("알림 권한이 없어 알림을 예약할 수 없습니다.");
+          }
+        } catch (error) {
+          console.error("알림 설정 중 오류 발생:", error);
         }
-      });
-    }
+      }
+    };
+
+    setupNotifications();
   }, [subscriptionList]);
 
   // 정렬
